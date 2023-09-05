@@ -88,12 +88,17 @@ if __name__ == "__main__":
         type=str,
         help="Ask a single question to the chatbot.",
     )
+    parser.add_argument(
+        "--converse",
+        action="store_true",
+        help="Converse with the chatbot.",
+    )
     args = parser.parse_args()
 
     pinecone_env = pinecone_environment()
     if args.load_resources:
         load_resources(pinecone_env)
-    elif args.ask:
+    if args.ask:
         print(ask(args.ask, pinecone_env))
-    else:
+    elif args.converse:
         converse(pinecone_env)
