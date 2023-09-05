@@ -1,0 +1,11 @@
+[project]
+name = "climate-copilot"
+version = "0.0.0"
+authors = [
+    { email = "mail@tjkuson.me" },
+    { name = "Tom Kuson" }
+]
+
+[tool.ruff]
+select = ["ALL", "NURSERY"]
+ignore = ["CPY001", "T20"]

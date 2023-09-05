@@ -1,1 +1,1 @@
-# climate-copilot
+# Climate Copilot
