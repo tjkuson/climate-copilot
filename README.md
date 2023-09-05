@@ -39,7 +39,7 @@ export PINECONE_ENVIRONMENT=your_index_environment
 Before the application can be run, you will need to load the data into Pinecone. To do this, run
 
 ```bash
-python climate_copilot --load-resources
+python -m climate_copilot --load-resources
 ```
 
 This will require your Pinecone and OpenAI accounts, and may take a few minutes to complete.
@@ -51,19 +51,19 @@ You can load more data to the index by adding more PDFs to the resources directo
 To ask a question:
 
 ```bash
-python climate_copilot --ask "What is the best way to reduce my carbon footprint?"
+python -m climate_copilot --ask "What is the best way to reduce my carbon footprint?"
 ```
 
 To run the application in a conversational mode:
 
 ```bash
-python climate_copilot --converse
+python -m climate_copilot --converse
 ```
 
 For help, run
 
 ```bash
-python climate_copilot --help
+python -m climate_copilot --help
 ```
 
 # Acknowledgements
