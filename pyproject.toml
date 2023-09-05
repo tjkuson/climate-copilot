@@ -8,4 +8,4 @@ authors = [
 
 [tool.ruff]
 select = ["ALL", "NURSERY"]
-ignore = ["CPY"]
+ignore = ["CPY001", "T20"]

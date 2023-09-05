@@ -1,15 +1,18 @@
 """Entry point for the application."""
 from __future__ import annotations
 
+import os
+from pathlib import Path
+from typing import TYPE_CHECKING
+
 import pinecone
 from langchain.document_loaders import PyPDFDirectoryLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from pathlib import Path
-import os
 from langchain.embeddings import OpenAIEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Pinecone
 
-from langchain.schema import Document
+if TYPE_CHECKING:
+    from langchain.schema import Document
 
 
 def pinecone_environment_variables() -> tuple[str, str]:
@@ -32,10 +35,9 @@ def ingest_resources(directory: Path) -> list[Document]:
     """Ingest the resources from the given directory."""
     loader = PyPDFDirectoryLoader(directory)
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=200, chunk_overlap=50, separators=["\n", "\r\n"]
+        chunk_size=200, chunk_overlap=50, separators=["\n", "\r\n"],
     )
-    docs = loader.load_and_split(text_splitter)
-    return docs
+    return loader.load_and_split(text_splitter)
 
 
 def load_resources() -> None:
@@ -50,7 +52,7 @@ def load_resources() -> None:
     resources_dir = Path(__file__).parent / "resources"
     pages = ingest_resources(resources_dir)
     Pinecone.from_documents(
-        documents=pages, embedding=embeddings, index_name="climate-copilot-text-db"
+        documents=pages, embedding=embeddings, index_name="climate-copilot-text-db",
     )
 
     print("Loaded resources into Pinecone.")
