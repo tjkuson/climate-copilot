@@ -9,7 +9,7 @@ A climate change chatbot powered by Pinecone and OpenAI. This application is for
 
 ## Get started
 
-## Installing
+### Installing
 
 Clone the repository and install the Python dependencies, run
 
@@ -17,7 +17,7 @@ Clone the repository and install the Python dependencies, run
 pip install -r requirements.txt
 ```
 
-## API keys
+### API keys
 
 You will need access to a Pinecone and OpenAI API key. Save these as environment variables. For example,
 
@@ -34,7 +34,7 @@ export PINECONE_ENVIRONMENT=your_index_environment
 ```
 
 
-## Load data
+### Load data
 
 Before the application can be run, you will need to load the data into Pinecone. To do this, run
 
@@ -46,7 +46,7 @@ This will require your Pinecone and OpenAI accounts, and may take a few minutes 
 
 You can load more data to the index by adding more PDFs to the resources directory and running the command again.
 
-## Running the application
+### Usage
 
 To ask a question:
 
@@ -66,10 +66,10 @@ For help, run
 python -m climate_copilot --help
 ```
 
-# Acknowledgements
+## Acknowledgements
 
 Training data (found in the resources directory) is from and copyright of the [Climate Change Committee](https://www.theccc.org.uk/).
 
-# Licence
+## Licence
 
 [MIT](LICENCE)
