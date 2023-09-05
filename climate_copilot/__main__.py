@@ -35,7 +35,9 @@ def ingest_resources(directory: Path) -> list[Document]:
     """Ingest the resources from the given directory."""
     loader = PyPDFDirectoryLoader(directory)
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=200, chunk_overlap=50, separators=["\n", "\r\n"],
+        chunk_size=200,
+        chunk_overlap=50,
+        separators=["\n", "\r\n"],
     )
     return loader.load_and_split(text_splitter)
 
@@ -52,7 +54,9 @@ def load_resources() -> None:
     resources_dir = Path(__file__).parent / "resources"
     pages = ingest_resources(resources_dir)
     Pinecone.from_documents(
-        documents=pages, embedding=embeddings, index_name="climate-copilot-text-db",
+        documents=pages,
+        embedding=embeddings,
+        index_name="climate-copilot-text-db",
     )
 
     print("Loaded resources into Pinecone.")
