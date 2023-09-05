@@ -8,4 +8,13 @@ authors = [
 
 [tool.ruff]
 select = ["ALL", "NURSERY"]
-ignore = ["CPY001", "T20"]
+ignore = ["CPY001", "T20", "D203", "D213"]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.flake8-type-checking]
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["pinecone"]
+ignore_missing_imports = true
