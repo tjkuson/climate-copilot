@@ -57,7 +57,7 @@ python climate_copilot --ask "What is the best way to reduce my carbon footprint
 To run the application in a conversational mode:
 
 ```bash
-python climate_copilot
+python climate_copilot --converse
 ```
 
 For help, run
