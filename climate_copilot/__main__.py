@@ -2,65 +2,34 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pinecone
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
-from langchain.document_loaders import PyPDFDirectoryLoader
 from langchain.embeddings import OpenAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Pinecone
 
+from climate_copilot.load import load_resources
+from climate_copilot.utils import pinecone_environment
+
 if TYPE_CHECKING:
-    from langchain.schema import Document
+    from climate_copilot.utils import PineconeEnvironment
 
 
-from climate_copilot.utils import pinecone_environment_variables
-
-
-def ingest_resources(directory: Path) -> list[Document]:
-    """Ingest the resources from the given directory."""
-    loader = PyPDFDirectoryLoader(directory)
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=200,
-        chunk_overlap=50,
-        separators=["\n", "\r\n"],
-    )
-    return loader.load_and_split(text_splitter)
-
-
-def load_resources() -> None:
-    """Load the resources into Pinecone."""
-    PINECONE_API_KEY, PINECONE_ENVIRONMENT = pinecone_environment_variables()
-
-    print("Connecting to Pinecone...")
-    pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENVIRONMENT)
-    embeddings = OpenAIEmbeddings()
-
-    print("Loading resources...")
-    resources_dir = Path(__file__).parent / "resources"
-    docs = ingest_resources(resources_dir)
-    Pinecone.from_documents(
-        documents=docs,
-        embedding=embeddings,
-        index_name="climate-copilot-text-db",
-    )
-
-    print("Loaded resources into Pinecone.")
-
-
-def ask(query: str) -> dict[str, str]:
+def ask(query: str, pinecone_env: PineconeEnvironment) -> str | None:
     """Ask a question to the chatbot."""
-    PINECONE_API_KEY, PINECONE_ENVIRONMENT = pinecone_environment_variables()
-    pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENVIRONMENT)
-    embeddings = OpenAIEmbeddings()
+    pinecone.init(api_key=pinecone_env.api_key, environment=pinecone_env.environment)
+    embeddings = OpenAIEmbeddings()  # type: ignore[call-arg]
     doc_search = Pinecone.from_existing_index(
-        index_name="climate-copilot-text-db",
+        index_name=pinecone_env.index_name,
         embedding=embeddings,
     )
-    chat = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=1, verbose=True)
+    chat = ChatOpenAI(
+        model_name="gpt-3.5-turbo",
+        temperature=1,
+        verbose=True,
+    )  # type: ignore[call-arg]
     qa = RetrievalQA.from_chain_type(
         chain_type="stuff",
         llm=chat,
@@ -86,11 +55,12 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    pinecone_env = pinecone_environment()
     if args.load_resources:
-        load_resources()
-
-    if args.ask:
-        print(ask(args.ask))
+        load_resources(pinecone_env)
+    elif args.ask:
+        res = ask(args.ask, pinecone_env)
+        print(res)
     else:
         msg = "Conversation mode not implemented."
         raise NotImplementedError(msg)
