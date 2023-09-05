@@ -11,7 +11,7 @@ A climate change chatbot powered by Pinecone and OpenAI. This application is for
 
 ## Installing
 
-Clone the repository and install the Python dependencies:
+Clone the repository and install the Python dependencies, run
 
 ```bash
 pip install -r requirements.txt
@@ -36,13 +36,15 @@ export PINECONE_ENVIRONMENT=your_index_environment
 
 ## Load data
 
-Before the application can be run, you will need to load the data into Pinecone. To do this, run the following command:
+Before the application can be run, you will need to load the data into Pinecone. To do this, run
 
 ```bash
 python climate_copilot --load-resources
 ```
 
 This will require your Pinecone and OpenAI accounts, and may take a few minutes to complete.
+
+You can load more data to the index by adding more PDFs to the resources directory and running the command again.
 
 ## Running the application
 
@@ -56,6 +58,12 @@ To run the application in a conversational mode:
 
 ```bash
 python climate_copilot
+```
+
+For help, run
+
+```bash
+python climate_copilot --help
 ```
 
 # Acknowledgements

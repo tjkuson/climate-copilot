@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from typing import TYPE_CHECKING
 
 import pinecone
-from langchain.chains import RetrievalQA
+from langchain.chains import ConversationalRetrievalChain, RetrievalQA
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
@@ -38,6 +39,40 @@ def ask(query: str, pinecone_env: PineconeEnvironment) -> str | None:
     return qa({"query": query}).get("result")
 
 
+def converse(pinecone_env: PineconeEnvironment) -> None:
+    """Converse with the chatbot."""
+    pinecone.init(api_key=pinecone_env.api_key, environment=pinecone_env.environment)
+    embeddings = OpenAIEmbeddings()  # type: ignore[call-arg]
+    doc_search = Pinecone.from_existing_index(
+        index_name=pinecone_env.index_name,
+        embedding=embeddings,
+    )
+    chat = ChatOpenAI(
+        model_name="gpt-3.5-turbo",
+        temperature=1,
+        verbose=True,
+    )  # type: ignore[call-arg]
+    qa = ConversationalRetrievalChain.from_llm(
+        llm=chat,
+        retriever=doc_search.as_retriever(),
+    )
+    chat_history: list[tuple[str, str]] = []
+    print("Start a conversation with Climate Copilot! (type 'quit' to exit)")
+    while True:
+        query = input("You: ")
+        if query == "quit":
+            break
+        response = qa({"question": query, "chat_history": chat_history}).get("answer")
+        if response is None:
+            print(
+                "Could not retrieve an answer from Climate Copilot. Try again.",
+                file=sys.stderr,
+            )
+            continue
+        print(f"Climate Copilot: {response}")
+        chat_history.append((query, response))
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="climate-copilot",
@@ -59,8 +94,6 @@ if __name__ == "__main__":
     if args.load_resources:
         load_resources(pinecone_env)
     elif args.ask:
-        res = ask(args.ask, pinecone_env)
-        print(res)
+        print(ask(args.ask, pinecone_env))
     else:
-        msg = "Conversation mode not implemented."
-        raise NotImplementedError(msg)
+        converse(pinecone_env)

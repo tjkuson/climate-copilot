@@ -1,0 +1,1 @@
+"""Climate Copilot application."""
